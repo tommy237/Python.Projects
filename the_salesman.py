@@ -9,7 +9,20 @@ choices=["rock","paper","scissors"]
 bullet=0     # special value
 round=0      # special value
 player_wins=False
+
+# ESSENTIAL FUNCTION; as if the terminal is talking.
+def message(text:str,delay:float|int):
+    print(text)
+    wait(delay)
+
+### Increments a new round
+def round_shift():
+    global round
+    round+=1
+    print(f"Proceeding to ROUND {round}.\n==================================\n\nROUND {round}")
+
 def roll():
+    global bullet
     bullets=[0 for _ in range(6)]
     bullets[rand(0,len(bullets)-1)]=1
     bullet=0
@@ -67,10 +80,12 @@ choose wisely.\n\n[Player]: """
         print("The result is a tie. Try again.")
         minus_one()
     elif result=="Player":
-        print("The bot wins this round.\nYou will decide this outcome.")
+        message(text="The bot wins this round.",delay=2)
+        message(text="You will decide this outcome.",delay=1)
         roulette(True)
     else:
-        print("The player wins this round.\nThe bot decides this outcome.")
+        message(text="The player wins this round.",delay=2)
+        message(text="The bot will decide this outcome.",delay=1)
         roulette(False)
 
 ### player decides which of the two choices to choose
@@ -90,6 +105,7 @@ def decide_loser(
             resp="Try again.\n\n[Player]: "
     player_choice=user_choices[number]
     print(f"Player pulled ({player_choice}).")
+    bot_choice=""
     for bot_option in bot_choices:
         match player_choice:
             case "rock" if bot_option==choices[1]: bot_choice=choices[1] #paper
@@ -98,8 +114,7 @@ def decide_loser(
             case _: bot_choice=bot_choices[rand(0,1)] #to make things fair
     if (rand(1,10)==1):
         bot_choice=bot_choices[rand(0,1)] #to make things fair
-    print(f"Bot pulled ({bot_choice}).")
-    wait(2)
+    message(text=f"Bot pulled ({bot_choice}).",delay=2)
     if player_choice==bot_choice: return "Tie"
     is_winner=rps_victor(player_choice,bot_choice)
     if is_winner==True: return "Player"
@@ -108,28 +123,27 @@ def decide_loser(
 ### Bot's bersion of russian roulette
 ### atleast they know what's aware.
 def bot_decision():
-    print("Bot is making a decision.")
-    is_near=(bullets[bullet+1]==1)
-    if is_near:
-        print("Bot has re-rolled.\nThe bullet is in a different chamber.")
+    message(text="Bot is making a decision.",delay=2)
+    try: next_bullet=bullets[bullet+1]
+    except IndexError: next_bullet=bullets[0]
+    is_near=next_bullet==1
+    if is_near and rand(1,2)==1:
         roll()
-        wait(2)
-    print("Bot has fired the gun.")
-    wait(2)
+        message(text="Bot has re-rolled.",delay=1)
+        message(text="The bullet is in a different chamber.",delay=1)
+    message(text="Bot has fired the gun.",delay=2)
     if fire()==True:
         victory()
+    else:
+        message(text="The bot survived.",delay=1)
+        round_shift()
     
 ### after ROCK, PAPER, SCISSORS, MINUS ONE
 ### russian roulette is 1/6 chance the player would lose.
 ### player_turn:true  = player's turn
 ### player_turn:false = bot's turn
 def roulette(player_turn:bool):
-    # if fire()==True:
-    #     print("GAME OVER")
-    # else:
-    #     print("Player is [SAFE]")
-    #     wait(2)
-    wait(2)
+    wait(1)
     if player_turn:
         chance=1/(len(bullets)-bullet)
         print(f"Player has a {chance*100}% chance they will lose.")
@@ -137,31 +151,61 @@ def roulette(player_turn:bool):
         while True:
             user_response=input(resp)
             match user_response:
-                case "roll":
-                    decision=2
-                    break
-                case "fire":
-                    decision=1
-                    break
-                case _:
-                    resp="Try again.\n\n[roll|fire]: "
+                case "roll": decision=2; break
+                case "fire": decision=1; break
+                case _: resp="""Try again.\n\n["roll"|"fire"]: """
         if decision==2:
-            print("Player has re-rolled.\nThe bullet is in a different chamber.")
             roll()
-            wait(2)
-        print("Player has fired the gun.")
-        wait(2)
+            message(text="Player has re-rolled.",delay=1)
+            message(text="The bullet is in a different chamber.",delay=1)
+        message(text="Player has fired the gun.",delay=2)
         if fire()==True:
             defeat()
+        else:
+            message(text="The player survived.",delay=1)
+            round_shift()
     else:
         bot_decision()
-    
 
 def main():
+    wait(2)
+    print("""
+                                -#+++++                             
+                           ###############                          
+                         ######+-..  .#####                         
+                         ###+++-.......+####                        
+                         ##++++-++ .++...+#                         
+                         +#++---++. .    -.                         
+                          --++++##-...                              
+                            ++##++-.  ..                            
+                             +###++.....                            
+                        .-+#+.-+#+..... ++-.                        
+                 ...-+++++###+++-.-+   -#+++++++-..                 
+            ++++++++##########+-#####.+########++++++++#            
+            ##################+ .##+.+##################            
+            ###################++#######################            
+           #####################+########################           
+          ################################################""")
+    message(text="\nYou're going to play a game now.",delay=2)
+    message(text="Rock, Paper, Scissors, Minus One.",delay=2)
+    message(text="I trust you know the rules.",delay=2)
+    message(text="You form a choice with each input, then take one away.",delay=3)
+    message(text="The game is decided by the remaining choices.",delay=3)
+    message(text="Of course, there's a penalty for the loser.",delay=3)
+    message(text="I'm sure you've seen this in movies.",delay=2)
+    message(text="It's called Russian Roulette.",delay=2)
+    message(text="I'll place one bullet into a revolver and close it.",delay=3)
+    message(text="The loser can decide to roll, or fire the gun.",delay=3)
+    message(text="After they roll, they'll fire immediately.",delay=3)
+    message(text="Your odds of death are 1 in 6.",delay=2)
+    message(text="Your odds of survival are 5 in 6.",delay=2)
+    message(text="Not that bad, right?",delay=3)
+    message(text="All right.",delay=1)
+    message(text="Now, let's play.",delay=2)
+    round_shift()
     while (True):
         minus_one()
         
-
 def victory():
     print(""" 
 _____________________________________________________________
