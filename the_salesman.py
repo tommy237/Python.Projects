@@ -9,6 +9,7 @@ choices=["rock","paper","scissors"]
 bullet=0     # special value
 round=0      # special value
 player_wins=False
+cont=True
 
 # ESSENTIAL FUNCTION; as if the terminal is talking.
 def message(text:str,delay:float|int):
@@ -131,7 +132,7 @@ def bot_decision():
         roll()
         message(text="Bot has re-rolled.",delay=1)
         message(text="The bullet is in a different chamber.",delay=1)
-    message(text="Bot has fired the gun.",delay=2)
+    message(text="Bot has fired the gun.",delay=3)
     if fire()==True:
         victory()
     else:
@@ -158,7 +159,7 @@ def roulette(player_turn:bool):
             roll()
             message(text="Player has re-rolled.",delay=1)
             message(text="The bullet is in a different chamber.",delay=1)
-        message(text="Player has fired the gun.",delay=2)
+        message(text="Player has fired the gun.",delay=3)
         if fire()==True:
             defeat()
         else:
@@ -192,7 +193,7 @@ def main():
     message(text="You form a choice with each input, then take one away.",delay=3)
     message(text="The game is decided by the remaining choices.",delay=3)
     message(text="Of course, there's a penalty for the loser.",delay=3)
-    message(text="I'm sure you've seen this in movies.",delay=2)
+    message(text="I'm sure you've seen this in movies. ̸/̸̅̅ ̆̅ ̅̅ ̅̅",delay=2)
     message(text="It's called Russian Roulette.",delay=2)
     message(text="I'll place one bullet into a revolver and close it.",delay=3)
     message(text="The loser can decide to roll, or fire the gun.",delay=3)
@@ -203,9 +204,11 @@ def main():
     message(text="All right.",delay=1)
     message(text="Now, let's play.",delay=2)
     round_shift()
-    while (True):
+    while (cont):
         minus_one()
+    message(text="Have a good rest of your day.",delay=1)
         
+### called when the bot loses.
 def victory():
     print(""" 
 _____________________________________________________________
@@ -220,8 +223,12 @@ _____________________________________________________________
 |==========|         You've won the game.        |==========|
 |==========|_________Shall we try again?_________|==========|
 |===========================================================|""")
-    return user_resp()
+    global player_wins
+    player_wins=True
+    user_resp()
+    player_wins=False
 
+### called when the bot wins.
 def defeat():
     print(""" 
 _____________________________________________________
@@ -239,11 +246,24 @@ _____________________________________________________
 |==========|  The bot has won the game.  |==========|
 |==========|_____Shall we try again?_____|==========|
 |===================================================|""")
-    return user_resp()
+    user_resp()
 
+### After the player receives the game status,
+### they can decide using "y" or "n" as input.
 def user_resp():
-    inp=input("[y/n]: ")
-    if input=="y" or input=="n":
-        return input=="y"
+    global cont
+    global round
+    text="[y/n]: "
+    while True:
+        inp=input(text)
+        if inp=="y" or inp=="n":
+            cont=inp=="y"
+            if cont:
+                round=0
+                round_shift()
+            break
+        else:
+            text="Try again.\n[y/n]: "
 
+### Runs the main program
 main()
