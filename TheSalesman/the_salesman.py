@@ -95,7 +95,7 @@ def decide_loser(
         user_choices:list[str],
         bot_choices:list[str]
         ):
-    resp="Choose 1 or 2.\n\n[Player]: "
+    resp="Choose \"1\" or \"2\".\n\n[Player]: "
     wait(2)
     while True:
         user_response=input(resp)
@@ -113,7 +113,8 @@ def decide_loser(
             case "paper" if bot_option==choices[2]: bot_choice=choices[2] #scissors
             case "scissors" if bot_option==choices[0]: bot_choice=choices[0] #rock
             case _: bot_choice=bot_choices[rand(0,1)] #to make things fair
-    if (rand(1,10)==1):
+    global round
+    if (rand(1,2*round)==1): #bot locks in B)
         bot_choice=bot_choices[rand(0,1)] #to make things fair
     message(text=f"Bot pulled ({bot_choice}).",delay=2)
     if player_choice==bot_choice: return "Tie"
@@ -130,8 +131,8 @@ def bot_decision():
     is_near=next_bullet==1
     if is_near and rand(1,2)==1:
         roll()
-        message(text="Bot has re-rolled.",delay=1)
-        message(text="The bullet is in a different chamber.",delay=1)
+        message(text="Bot has re-rolled the cylinder.",delay=2)
+        message(text="The bullet is in a different chamber.",delay=2)
     message(text="Bot has fired the gun.",delay=3)
     if fire()==True:
         victory()
@@ -157,8 +158,8 @@ def roulette(player_turn:bool):
                 case _: resp="""Try again.\n\n["roll"|"fire"]: """
         if decision==2:
             roll()
-            message(text="Player has re-rolled.",delay=1)
-            message(text="The bullet is in a different chamber.",delay=1)
+            message(text="Player has re-rolled the cylinder.",delay=2)
+            message(text="The bullet is in a different chamber.",delay=2)
         message(text="Player has fired the gun.",delay=3)
         if fire()==True:
             defeat()
